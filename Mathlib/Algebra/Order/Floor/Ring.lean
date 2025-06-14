@@ -83,7 +83,7 @@ theorem floor_eq_on_Ico' (n : ℤ) : ∀ a ∈ Set.Ico (n : R) (n + 1), (⌊a⌋
 theorem preimage_floor_singleton (m : ℤ) : (floor : R → ℤ) ⁻¹' {m} = Ico (m : R) (m + 1) :=
   ext fun _ => floor_eq_iff
 
-variable [IsStrictOrderedRing R]
+variable [IsOrderedRing R]
 
 @[simp, bound]
 theorem sub_one_lt_floor (a : R) : a - 1 < ⌊a⌋ :=
@@ -181,7 +181,7 @@ theorem abs_sub_lt_one_of_floor_eq_floor {R : Type*}
     {a b : R} (h : ⌊a⌋ = ⌊b⌋) : |a - b| < 1 := by
   have : a < ⌊a⌋ + 1 := lt_floor_add_one a
   have : b < ⌊b⌋ + 1 := lt_floor_add_one b
-  have : (⌊a⌋ : R) = ⌊b⌋ := Int.cast_inj.2 h
+  have : (⌊a⌋ : R) = ⌊b⌋ := congrArg _ h
   have : (⌊a⌋ : R) ≤ a := floor_le a
   have : (⌊b⌋ : R) ≤ b := floor_le b
   exact abs_sub_lt_iff.2 ⟨by linarith, by linarith⟩

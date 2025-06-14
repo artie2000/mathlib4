@@ -128,6 +128,21 @@ theorem lt_ceil : n < ⌈a⌉₊ ↔ (n : α) < a :=
 @[simp]
 theorem ceil_pos : 0 < ⌈a⌉₊ ↔ 0 < a := by rw [lt_ceil, cast_zero]
 
+lemma floor_lt (ha : 0 ≤ a) : ⌊a⌋₊ < n ↔ a < n := lt_iff_lt_of_le_iff_le <| le_floor_iff ha
+
+lemma floor_lt_one (ha : 0 ≤ a) : ⌊a⌋₊ < 1 ↔ a < 1 := (floor_lt ha).trans <| by rw [Nat.cast_one]
+
+lemma floor_le (ha : 0 ≤ a) : (⌊a⌋₊ : α) ≤ a := (le_floor_iff ha).1 le_rfl
+
+lemma floor_eq_iff (ha : 0 ≤ a) : ⌊a⌋₊ = n ↔ ↑n ≤ a ∧ a < ↑n + 1 := by
+  rw [← le_floor_iff ha, ← Nat.cast_one, ← Nat.cast_add, ← floor_lt ha, Nat.lt_add_one_iff,
+    le_antisymm_iff, and_comm]
+
+instance : Nontrivial α := by
+  by_contra h
+  rw [not_nontrivial_iff_subsingleton] at h
+  exact ((floor_lt (α := α) le_rfl).1 <| Nat.lt_add_one _).ne <| Subsingleton.elim ..
+
 end LinearOrderedSemiring
 
 end Nat
@@ -156,7 +171,7 @@ instance : FloorRing ℤ where
     rw [Int.cast_id, id_def]
 
 /-- A `FloorRing` constructor from the `floor` function alone. -/
-def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (floor : α → ℤ)
+def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (floor : α → ℤ)
     (gc_coe_floor : GaloisConnection (↑) floor) : FloorRing α :=
   { floor
     ceil := fun a => -floor (-a)
@@ -164,7 +179,7 @@ def FloorRing.ofFloor (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (
     gc_ceil_coe := fun a z => by rw [neg_le, ← gc_coe_floor, Int.cast_neg, neg_le_neg_iff] }
 
 /-- A `FloorRing` constructor from the `ceil` function alone. -/
-def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (ceil : α → ℤ)
+def FloorRing.ofCeil (α) [Ring α] [LinearOrder α] [IsOrderedRing α] (ceil : α → ℤ)
     (gc_ceil_coe : GaloisConnection ceil (↑)) : FloorRing α :=
   { floor := fun a => -ceil (-a)
     ceil
@@ -232,10 +247,14 @@ theorem floor_le (a : α) : (⌊a⌋ : α) ≤ a :=
 
 theorem floor_nonneg : 0 ≤ ⌊a⌋ ↔ 0 ≤ a := by rw [le_floor, Int.cast_zero]
 
+/- We repeat this argument in order to to prove `FloorRing.toFloorSemiring` -/
+private instance : Nontrivial α := by
+  by_contra h
+  rw [not_nontrivial_iff_subsingleton] at h
+  exact ((floor_lt (α := α) (a := 0)).1 <| Int.lt_succ _).ne <| Subsingleton.elim ..
+
 @[bound]
-theorem floor_nonpos [IsStrictOrderedRing α] (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := by
-  rw [← @cast_le α, Int.cast_zero]
-  exact (floor_le a).trans ha
+theorem floor_nonpos [IsOrderedRing α] (ha : a ≤ 0) : ⌊a⌋ ≤ 0 := mod_cast (floor_le a).trans ha
 
 /-! #### Ceil -/
 
@@ -253,7 +272,7 @@ theorem le_ceil (a : α) : a ≤ ⌈a⌉ :=
   gc_ceil_coe.le_u_l a
 
 @[bound]
-theorem ceil_nonneg [IsStrictOrderedRing α] (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
+theorem ceil_nonneg [IsOrderedRing α] (ha : 0 ≤ a) : 0 ≤ ⌈a⌉ := mod_cast ha.trans (le_ceil a)
 
 @[simp]
 theorem ceil_pos : 0 < ⌈a⌉ ↔ 0 < a := by rw [lt_ceil, cast_zero]
@@ -262,7 +281,7 @@ end Int
 
 section FloorRingToSemiring
 
-variable [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [FloorRing α]
+variable [Ring α] [LinearOrder α] [IsOrderedRing α] [FloorRing α]
 
 /-! #### A floor ring as a floor semiring -/
 
@@ -328,7 +347,7 @@ def evalNatCeil : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℕ), ~q(@Nat.ceil $α' $ir $io $j $a) =>
     let _i ← synthInstanceQ q(LinearOrder $α')
-    let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
+    let _i ← synthInstanceQ q(IsOrderedRing $α')
     assertInstancesCommute
     match ← core q(inferInstance) q(inferInstance) a with
     | .positive pa =>
@@ -350,7 +369,7 @@ def evalIntCeil : PositivityExt where eval {u α} _zα _pα e := do
         assertInstancesCommute
         pure (.positive q(int_ceil_pos (α := $α') $pa))
     | .nonnegative pa =>
-        let _i ← synthInstanceQ q(IsStrictOrderedRing $α')
+        let _i ← synthInstanceQ q(IsOrderedRing $α')
         assertInstancesCommute
         pure (.nonnegative q(Int.ceil_nonneg (α := $α') $pa))
     | _ => pure .none

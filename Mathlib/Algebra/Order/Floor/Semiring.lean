@@ -35,19 +35,6 @@ variable [Semiring R] [LinearOrder R] [FloorSemiring R] {a b : R} {n : ℕ}
 
 section floor
 
-theorem floor_lt (ha : 0 ≤ a) : ⌊a⌋₊ < n ↔ a < n :=
-  lt_iff_lt_of_le_iff_le <| le_floor_iff ha
-
-theorem floor_lt_one (ha : 0 ≤ a) : ⌊a⌋₊ < 1 ↔ a < 1 :=
-  (floor_lt ha).trans <| by rw [Nat.cast_one]
-
-theorem floor_le (ha : 0 ≤ a) : (⌊a⌋₊ : R) ≤ a :=
-  (le_floor_iff ha).1 le_rfl
-
-theorem floor_eq_iff (ha : 0 ≤ a) : ⌊a⌋₊ = n ↔ ↑n ≤ a ∧ a < ↑n + 1 := by
-  rw [← le_floor_iff ha, ← Nat.cast_one, ← Nat.cast_add, ← floor_lt ha, Nat.lt_add_one_iff,
-    le_antisymm_iff, and_comm]
-
 variable [IsStrictOrderedRing R]
 
 theorem lt_of_floor_lt (h : ⌊a⌋₊ < n) : a < n :=

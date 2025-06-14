@@ -325,7 +325,7 @@ end LinearOrderedField
 section Real
 
 variable {R S : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
-  [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
+  [Ring S] [LinearOrder S] [IsOrderedRing S]
 
 theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f : R →+* S) : Monotone f :=
   (monotone_iff_map_nonneg f).2 fun r h => by
