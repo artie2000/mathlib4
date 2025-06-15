@@ -1138,7 +1138,14 @@ variable {R : Type*}
 
 section LinearOrderedCommRing
 
-variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {a : ℍ[R]}
+variable [CommRing R] [LinearOrder R] [IsOrderedRing R] {a : ℍ[R]}
+
+@[simp]
+theorem normSq_nonneg : 0 ≤ normSq a := by
+  rw [normSq_def']
+  apply_rules [sq_nonneg, add_nonneg]
+
+variable [IsStrictOrderedRing R]
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
@@ -1149,11 +1156,6 @@ theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
   all_goals apply_rules [sq_nonneg, add_nonneg]
 
 theorem normSq_ne_zero : normSq a ≠ 0 ↔ a ≠ 0 := normSq_eq_zero.not
-
-@[simp]
-theorem normSq_nonneg : 0 ≤ normSq a := by
-  rw [normSq_def']
-  apply_rules [sq_nonneg, add_nonneg]
 
 @[simp]
 theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
