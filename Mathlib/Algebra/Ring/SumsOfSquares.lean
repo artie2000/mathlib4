@@ -22,7 +22,7 @@ We introduce a predicate for sums of squares in a ring.
   `a * a + s` is a sum of squares.
 - `AddMonoid.sumSq R` and `Subsemiring.sumSq R`: respectively
   the submonoid or subsemiring of sums of squares in an additive monoid or semiring `R`
-
+  with multiplication.
 -/
 
 variable {R : Type*}
