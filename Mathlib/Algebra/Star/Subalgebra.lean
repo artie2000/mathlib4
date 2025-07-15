@@ -375,10 +375,12 @@ def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
     rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
     simpa using ha
 
-theorem starClosure_coe (S : Subalgebra R A) :
+@[simp]
+theorem coe_starClosure (S : Subalgebra R A) :
     (S.starClosure : Set A) = (S ⊔ star S : Subalgebra R A) := rfl
 
-theorem starClosure_mem (S : Subalgebra R A) {x : A} :
+@[simp]
+theorem mem_starClosure (S : Subalgebra R A) {x : A} :
     x ∈ S.starClosure ↔ x ∈ S ⊔ star S := Iff.rfl
 
 theorem starClosure_toSubalgebra (S : Subalgebra R A) :
@@ -423,20 +425,16 @@ theorem adjoin_eq_starClosure_adjoin (s : Set A) : adjoin R s = (Algebra.adjoin 
 theorem adjoin_toSubalgebra (s : Set A) :
     (adjoin R s).toSubalgebra = Algebra.adjoin R (s ∪ star s) := rfl
 
-@[simp, aesop safe 20 (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   Set.subset_union_left.trans Algebra.subset_adjoin
 
-@[simp, aesop safe 20 (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   Set.subset_union_right.trans Algebra.subset_adjoin
 
-@[aesop 80% (rule_sets := [SetLike])]
+@[aesop 80% apply (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
-
-@[aesop 80% (rule_sets := [SetLike])]
-theorem mem_adjoin_of_star_mem {s : Set A} {x : A} (hx : star x ∈ s) : x ∈ adjoin R s :=
-  star_subset_adjoin R s hx
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=
   Algebra.subset_adjoin <| Set.mem_union_left _ (Set.mem_singleton x)
@@ -471,7 +469,6 @@ theorem adjoin_le_iff {S : StarSubalgebra R A} {s : Set A} : adjoin R s ≤ S �
 theorem adjoin_mono {s t : Set A} (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   StarAlgebra.gc.monotone_l H
 
-@[simp]
 lemma adjoin_eq (S : StarSubalgebra R A) : adjoin R (S : Set A) = S :=
   le_antisymm (adjoin_le le_rfl) (subset_adjoin R (S : Set A))
 

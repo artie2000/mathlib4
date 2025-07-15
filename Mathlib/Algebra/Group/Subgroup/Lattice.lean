@@ -486,6 +486,14 @@ theorem closure_insert_one (s : Set G) : closure (insert 1 s) = closure s := by
   rw [insert_eq, closure_union]
   simp [one_mem]
 
+@[to_additive]
+theorem closure_union_one (s : Set G) : closure (s ∪ {1}) = closure s := by
+  rw [union_singleton, closure_insert_one]
+
+@[to_additive (attr := simp)]
+theorem closure_diff_one (s : Set G) : closure (s \ {1}) = closure s := by
+  rw [← closure_union_one (s \ {1}), diff_union_self, closure_union_one]
+
 theorem toAddSubgroup_closure (S : Set G) :
     (Subgroup.closure S).toAddSubgroup = AddSubgroup.closure (Additive.toMul ⁻¹' S) :=
   le_antisymm (toAddSubgroup.le_symm_apply.mp <|
@@ -529,8 +537,7 @@ theorem coe_iSup_of_directed {ι} [Nonempty ι] {S : ι → Subgroup G} (hS : Di
 theorem mem_sSup_of_directedOn {K : Set (Subgroup G)} (Kne : K.Nonempty) (hK : DirectedOn (· ≤ ·) K)
     {x : G} : x ∈ sSup K ↔ ∃ s ∈ K, x ∈ s := by
   haveI : Nonempty K := Kne.to_subtype
-  simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, Subtype.coe_mk,
-    exists_prop]
+  simp only [sSup_eq_iSup', mem_iSup_of_directed hK.directed_val, SetCoe.exists, exists_prop]
 
 variable {C : Type*} [CommGroup C] {s t : Subgroup C} {x : C}
 
@@ -551,7 +558,7 @@ theorem mem_sup : x ∈ s ⊔ t ↔ ∃ y ∈ s, ∃ z ∈ t, y * z = x :=
 
 @[to_additive]
 theorem mem_sup' : x ∈ s ⊔ t ↔ ∃ (y : s) (z : t), (y : C) * z = x :=
-  mem_sup.trans <| by simp only [SetLike.exists, coe_mk, exists_prop]
+  mem_sup.trans <| by simp only [SetLike.exists, exists_prop]
 
 @[to_additive]
 theorem mem_closure_pair {x y z : C} :
@@ -561,7 +568,7 @@ theorem mem_closure_pair {x y z : C} :
 
 @[to_additive]
 theorem disjoint_def {H₁ H₂ : Subgroup G} : Disjoint H₁ H₂ ↔ ∀ {x : G}, x ∈ H₁ → x ∈ H₂ → x = 1 :=
-  disjoint_iff_inf_le.trans <| by simp only [Disjoint, SetLike.le_def, mem_inf, mem_bot, and_imp]
+  disjoint_iff_inf_le.trans <| by simp only [SetLike.le_def, mem_inf, mem_bot, and_imp]
 
 @[to_additive]
 theorem disjoint_def' {H₁ H₂ : Subgroup G} :
